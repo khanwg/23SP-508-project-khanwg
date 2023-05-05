@@ -14,51 +14,68 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     } else {
         $username = trim($_POST["username"]);
         $password = trim($_POST['password']);
-
+        
         // Check if the database connection was successful
         if (!$conn) {
             die("Connection failed: " . mysqli_connect_error());
         }
-
-        // Select the user from the database with the matching EID
-        $stmt = $conn->prepare("SELECT V_number, EID, password_hash FROM Student_Login WHERE EID = ?");
-        $stmt->bind_param("s", $username);
-        $stmt->execute();
-        $result = $stmt->get_result();
-
-        if ($result->num_rows > 0) {
-            $row = $result->fetch_assoc();
-            $vNumber = $row['V_number'];
-            $eid = $row['EID'];
-            $hashed_password = $row['password_hash'];
-
-            // Check if the stored hash matches the password entered 
-            if (password_verify($password, $hashed_password)) {
-                // Password is correct, so start a new session
-                session_start();
-
-                // Store data in session variables
-                $_SESSION["loggedin"] = true;
-                $_SESSION["V_number"] = $vNumber;
-                $_SESSION["EID"] = $eid;
-
-                // Redirect user to profile page
-                header("location: profile.php");
-                exit;
+        
+        // Checks for EIDs in database that match user entered username
+        $sql = "SELECT V_number, EID, password_hash, ACCESS_TYPE FROM EID_Login WHERE EID = :username";
+        
+        if ($stmt = $conn->prepare($sql)) {
+            
+            $stmt->bindParam(":username", $param_username, PDO::PARAM_STR);
+            
+            
+            $param_username = trim($_POST["username"]);
+            
+           
+            if ($stmt->execute()) {
+                // Check if username exists, if yes then check for password
+                if ($stmt->rowCount() == 1) {
+                    if ($row = $stmt->fetch()) {
+                        $hashed_password = $row['password_hash'];
+                        //checks if the stored hash matches the password entered 
+                        if (password_verify($password, $hashed_password)) {
+                            // Password is correct, so start a new session
+                            session_start();
+                            
+                            // Store data in session variables
+                            $_SESSION["loggedin"] = true;
+                            $_SESSION["V_number"] = $row['V_number'];
+                            $_SESSION["EID"] = $row['EID'];
+                            $_SESSION["ACCESS_TYPE"]=$row['ACCESS_TYPE'];
+                            
+                            if ($row['ACCESS_TYPE'] == 'STUDENT') {
+                                header("location: studentProfile.php");
+                                exit;
+                            } elseif ($row['ACCESS_TYPE'] == 'ADMIN') {
+                                header("location: AdminInfopage.php");
+                                exit;
+                            }
+                        } else {
+                            // Display an error message if password is not valid
+                            $password_err = 'Invalid Password. Please try again.';
+                        }
+                    }
+                } else {
+                    // Message for if username does not exist
+                    $username_err = 'No existing account matches username.';
+                }
             } else {
-                // Display an error message if password is not valid
-                $password_err = 'Invalid Password. Please try again.';
+                // Handle errors during statement execution
+                echo "Error: " . $stmt->error;
             }
-        } else {
-            // Message for if username does not exist
-            $username_err = 'No existing account matches username.';
         }
-
-        // Close statement and connection
-        $stmt->close();
-        $conn->close();
+        
+        
+        $stmt = null;
     }
-}
+    
+    // Close connection
+    $conn = null;
+} 
 ?>
 
 
