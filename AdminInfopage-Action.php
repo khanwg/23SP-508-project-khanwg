@@ -41,20 +41,18 @@ function listStudents(){
     $dataTable = array();
     
     while ($sqlRow = $stmt->fetch()) {
-        $dataRow = array();
-        
-        $dataRow[] = $sqlRow['V-Number'];
-        $dataRow[] = $sqlRow['department_name'];
-        $dataRow[] = $sqlRow['advisor_name'];
-        $dataRow[] = $sqlRow['eID'];
-        $dataRow[] = $sqlRow['Name'];
-        $dataRow[] = $sqlRow['DOB'];
-        $dataRow[] = $sqlRow['Total Credits']?? "";
-        $dataRow[] = $sqlRow['Enrollment Date']?? "";
-        $dataRow[] = $sqlRow['Expected Graduation Date']?? "";
-        
-        $dataRow[] = '<button type="button" name="update" student_id="' . $sqlRow["eID"] . '" class="btn btn-warning btn-sm update">Update</button>
-                  <button type="button" name="delete" student_id="' . $sqlRow["eID"] . '" class="btn btn-danger btn-sm delete" >Delete</button>';
+        $dataRow = array(
+            $sqlRow['V-Number'],
+            $sqlRow['department_name'],
+            $sqlRow['advisor_name'],
+            $sqlRow['eID'],
+            $sqlRow['Name'],
+            $sqlRow['DOB'],
+            $sqlRow['Total Credits'] ?? "NA",
+            $sqlRow['Enrollment Date'] ?? "Unknown",
+            $sqlRow['Expected Graduation Date'] ?? "Unknown"
+          
+        );
         
         $dataTable[] = $dataRow;
     }
@@ -65,9 +63,10 @@ function listStudents(){
         "recordsFiltered" => $numberRows,
         "data" => $dataTable
     );
-    
+
     echo json_encode($output);
 }
+
 
 
 function addStudent()
