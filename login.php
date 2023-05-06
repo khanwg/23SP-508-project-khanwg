@@ -21,9 +21,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
         
         // Checks for EIDs in database that match user entered username
-        $sql = "SELECT V_number, EID, password_hash, ACCESS_TYPE FROM EID_Login WHERE EID = :username";
-        
-        if ($stmt = $conn->prepare($sql)) {
+        //Checks Student_Login database for matching EID
+        $sqlStudent = "SELECT V_number, EID, password_hash FROM Student_Login WHERE EID = :username";
+       
+        //Checks admin_Login for matching EID
+        $sqlAdmin = "SELECT V_number, EID, password_hash FROM admin_Login WHERE EID = :username";
+        if ($stmt = $conn->prepare($sqlStudent)) {
             
             $stmt->bindParam(":username", $param_username, PDO::PARAM_STR);
             
@@ -45,14 +48,13 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                             $_SESSION["loggedin"] = true;
                             $_SESSION["V_number"] = $row['V_number'];
                             $_SESSION["EID"] = $row['EID'];
-                            $_SESSION["ACCESS_TYPE"]=$row['ACCESS_TYPE'];
                             
-                            if ($row['ACCESS_TYPE'] == 'STUDENT') {
+                            //Checks if the EID matches an EID entry from the Student_Login table 
+                            if ($row['EID'] == $param_username) {
                                 header("location: studentProfile.php");
                                 exit;
-                            } elseif ($row['ACCESS_TYPE'] == 'ADMIN') {
-                                header("location: AdminInfopage.php");
-                                exit;
+                           
+                            
                             }
                         } else {
                             // Display an error message if password is not valid
@@ -68,6 +70,52 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 echo "Error: " . $stmt->error;
             }
         }
+        //Checks if the EID matches an EID entry from the admin_Login table
+        if ($stmt = $conn->prepare($sqlAdmin)) {
+            
+            $stmt->bindParam(":username", $param_username, PDO::PARAM_STR);
+            
+            
+            $param_username = trim($_POST["username"]);
+            
+            
+            if ($stmt->execute()) {
+                // Check if username exists, if yes then check for password
+                if ($stmt->rowCount() == 1) {
+                    if ($row = $stmt->fetch()) {
+                        $hashed_password = $row['password_hash'];
+                        //checks if the stored hash matches the password entered
+                        if (password_verify($password, $hashed_password)) {
+                            // Password is correct, so start a new session
+                            session_start();
+                            
+                            // Store data in session variables
+                            $_SESSION["loggedin"] = true;
+                            $_SESSION["V_number"] = $row['V_number'];
+                            $_SESSION["EID"] = $row['EID'];
+                            
+                            //Checks if the EID matches an EID entry from the Student_Login table
+                            if ($row['EID'] == $param_username) {
+                                header("location: AdminInfopage.php");
+                                exit;
+                                
+                                
+                            }
+                        } else {
+                            // Display an error message if password is not valid
+                            $password_err = 'Invalid Password. Please try again.';
+                        }
+                    }
+                } else {
+                    // Message for if username does not exist
+                    $username_err = 'No existing account matches username.';
+                }
+            } else {
+                // Handle errors during statement execution
+                echo "Error: " . $stmt->error;
+            }
+        }
+        
         
         
         $stmt = null;
