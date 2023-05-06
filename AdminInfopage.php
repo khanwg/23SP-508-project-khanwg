@@ -47,6 +47,7 @@
                     <th>Total Credits</th>
                     <th>Enrollment Date</th>
                     <th>Expected Graduation Date</th>
+                    <th>Actions</th> 
                 </tr>
             </thead>
             <tbody>
@@ -58,9 +59,10 @@
                     echo "<td>" . $row['eID'] . "</td>";
                     echo "<td>" . $row['Name'] . "</td>";
                     echo "<td>" . $row['DOB'] . "</td>";
-                    echo "<td>" . $row['Total Credits'] . "</td>";
-                    echo "<td>" . $row['Enrollment Date'] . "</td>";
-                    echo "<td>" . $row['Expected Graduation Date'] . "</td>";
+                    echo "<td>" . ($row['Total Credits'] ? $row['Total Credits'] : "N/A") . "</td>";
+                    echo "<td>" . ($row['Enrollment Date'] ? $row['Enrollment Date'] : "N/A") . "</td>";
+                    echo "<td>" . ($row['Expected Graduation Date'] ? $row['Expected Graduation Date'] : "N/A") . "</td>";
+                    echo "<td><button onclick=\"deleteStudent(" . $row['V-Number'] . ")\">Delete</button></td>"; 
                     echo "</tr>";
                 } ?>
             </tbody>
