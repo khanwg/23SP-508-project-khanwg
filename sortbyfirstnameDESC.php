@@ -1,9 +1,7 @@
-
 <html>
 <head>
-    <title>Admin database - Students</title>
-    <?php require_once('header.php'); ?>
-    <!-- Include jQuery library -->
+<title>Admin database - Students</title>
+<!-- Include jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 
     <!-- Include DataTables plugin library -->
@@ -14,10 +12,15 @@
     <script type="text/javascript" src="AdminInfopage.js"></script>
 </head>
 <body>
-    <?php require_once('connection.php'); ?>
-    <?php require_once('AdminInfopage-Action.php'); ?>
-    <?php 
-    $sql = "SELECT s.V_number as `V-Number`,
+<?php
+
+// Connect to the database
+require_once('connection.php');
+require_once('header.php'); 
+// Check if the submit button was clicked
+if (isset($_POST['submit'])) {
+
+  $sql = "SELECT s.V_number as `V-Number`,
                d.department_name AS `Department Name`,
                concat(a.first_name,' ',a.last_name) as `Advisor Name`,
                s.eID as `eID`,
@@ -28,13 +31,14 @@
                s.expected_graduation_date as `Expected Graduation Date`
         FROM student s
         INNER JOIN department d ON s.department = d.department_id
-        INNER JOIN academic_advisor a ON a.academic_advisor_id = s.advisor";
-    $stmt = $conn->prepare($sql);
-    $stmt->execute();
-    
-    ?>
+        INNER JOIN academic_advisor a ON a.academic_advisor_id = s.advisor
+        ORDER BY `Name` DESC";
+  
+  $stmt = $conn->prepare($sql);
+  $stmt->execute();
 
-<div class="container-fluid mt-3 mb-3">
+
+?>
 <?php 
 session_start();
 // if the user is logged in, store their name and V number to welcome them.
@@ -49,46 +53,44 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true){
     $user_FullName = $stmt2->fetchColumn();
 }
 ?>
+
+
 <div class="container-fluid mt-3 mb-3">
     <h4>Welcome, <?php echo $user_FullName; ?>!</h4>
-	
     <div>
         <table id="table-students" class="table table-bordered table-striped">
             <thead>
             <form action="AddStudentPage.php" method="get">
-    		<button type="submit">Add Student Into Database</button>
-    		
-			</form>
-			<form method="post" action="sortbyfirstnameASC.php">
-  <button type="submit" name="submit">Sort By First Name (ASC)</button>
-</form>
-<form method="post" action="sortbyfirstnameDESC.php">
-  <button type="submit" name="submit">Sort By First Name (DESC)</button>
-</form>
-           <form method="post" action="sortbylastnameASC.php">
+                <button type="submit">Add Student Into Database</button>
+            </form>
+            <form method="post" action="sortbyfirstnameASC.php">
+                <button type="submit" name="submit">Sort By First Name (ASC)</button>
+            </form>
+            <form method="post" action="sortbyfirstnameDESC.php">
+                <button type="submit" name="submit">Sort By First Name (DESC)</button>
+            </form>
+                       <form method="post" action="sortbylastnameASC.php">
                 <button type="submit" name="submit">Sort By Last Name (ASC)</button>
             </form>
              <form method="post" action="sortbylastnameDESC.php">
                 <button type="submit" name="submit">Sort By Last Name (DESC)</button>
             </form>
-              <form method="post" action="logout.php">
+            <form method="post" action="logout.php">
               <button type="submit" name="submit">Logout</button>
             </form>
 			
-            
-           
-                <tr>
-                    <th>V# (V-Number)</th>
-                    <th>Department Name</th>
-                    <th>Advisor Name</th>
-                    <th>eID</th>
-                    <th>Name</th>
-                    <th>DOB</th>
-                    <th>Total Credits</th>
-                    <th>Enrollment Date</th>
-                    <th>Expected Graduation Date</th>
-                    <th>Actions</th> 
-                </tr>
+            <tr>
+                <th>V# (V-Number)</th>
+                <th>Department Name</th>
+                <th>Advisor Name</th>
+                <th>eID</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Total Credits</th>
+                <th>Enrollment Date</th>
+                <th>Expected Graduation Date</th>
+                <th>Actions</th> 
+            </tr>
             </thead>
             <tbody>
                 <?php while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
@@ -103,13 +105,21 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true){
                     echo "<td>" . ($row['Enrollment Date'] ? $row['Enrollment Date'] : "N/A") . "</td>";
                     echo "<td>" . ($row['Expected Graduation Date'] ? $row['Expected Graduation Date'] : "N/A") . "</td>";
                     echo "<td><a href='updateStudentAdmin.php?v_number=" . $row['V-Number'] . "'>Update</a> | <a href='#' onclick=\"if(confirm('Are you sure you would like to delete this student?')){window.location.href='deleteStudent.php?v_number=" . $row['V-Number'] . "';}\">Delete</a></td>";
-                    
                     echo "</tr>";
-                } ?>
-            </tbody>
-        </table>
-    </div>
-</div>
+}
+} else{
+    echo "PLEASE GO BACK TO DATABASE.";
+   ?> <form action="AdminInfopage.php" method="get">
+    <button type="submit">Back to Database</button>
     
+    </form>
+<?php }?>
+
+</tbody>
+</table>
+</div>
+
+</div>
+
 
 

@@ -1,4 +1,8 @@
 <?php
+/* References: 
+    https://www.php.net/manual/en/book.session.php
+    https://www.tutorialrepublic.com/php-tutorial/php-mysql-login-system.php
+*/
 require_once('connection.php');
 session_start();
 

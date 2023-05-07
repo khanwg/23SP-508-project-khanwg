@@ -122,18 +122,15 @@ function getStudent()
     }
 }
 
-function updateStudent()
+function updateStudent($conn, $V_number)
 {
-    global $conn;
-    
-    if ($_POST['V-Number']) {
-        
+    if (isset($_POST['V_number'])) {
         $sqlQuery = "UPDATE student
                         SET
-                        V_number = :V_Number, 
-                        department = :department, 
-                        advisor = :advisor, 
-                        EID = :EID, 
+                        V_number = :V_number,
+                        department = :department,
+                        advisor = :advisor,
+                        EID = :EID,
                         first_name = :first_name,
                         last_name = :last_name,
                         DOB = :DOB,
@@ -141,7 +138,7 @@ function updateStudent()
                         enrollment_date = :enrollment_date,
                         expected_graduation_date = :expected_graduation_date,
                         preferred_name = :preferred_name
-                        WHERE V_Number = :V_number";
+                        WHERE V_number = :V_number";
         
         $stmt = $conn->prepare($sqlQuery);
         $stmt->bindValue(':V_number', $_POST["V_number"]);
@@ -153,11 +150,23 @@ function updateStudent()
         $stmt->bindValue(':DOB', $_POST["DOB"]);
         $stmt->bindValue(':total_credits', $_POST["total_credits"]);
         $stmt->bindValue(':enrollment_date', $_POST["enrollment_date"]);
-        $stmt->bindValue(':expected_graduation_date', $_POST["expected_graduation_date"]);
+        if (!empty($_POST["expected_graduation_date"])) {
+            $stmt->bindValue(':expected_graduation_date', $_POST["expected_graduation_date"]);
+        } else {
+            $stmt->bindValue(':expected_graduation_date', null, PDO::PARAM_NULL);
+        }
+        if (!empty($_POST["total_credits"])) {
+            $stmt->bindValue(':total_credits', $_POST["total_credits"]);
+        } else {
+            $stmt->bindValue(':total_credits', null, PDO::PARAM_NULL);
+        }
         $stmt->bindValue(':preferred_name', $_POST["preferred_name"]);
+        $stmt->bindValue(':V_number', $V_number);
         $stmt->execute();
     }
 }
+
+
 
 function deleteStudent()
 {
@@ -223,5 +232,6 @@ if(!empty($_POST['action']) && $_POST['action'] == 'deleteStudent') {
 if(!empty($_POST['action']) && $_POST['action'] == 'deleteStudent') {
     sortByNameASC();
 }
+
 
 ?>

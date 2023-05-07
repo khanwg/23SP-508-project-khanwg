@@ -77,6 +77,11 @@ else {
         } else {
             $stmt->bindValue(':expected_graduation_date', null, PDO::PARAM_NULL);
         }
+        if (!empty($_POST["total_credits"])) {
+            $stmt->bindValue(':total_credits', $_POST["total_credits"]);
+        } else {
+            $stmt->bindValue(':total_credits', null, PDO::PARAM_NULL);
+        }
         $stmt->bindValue(':preferred_name', $_POST["preferred_name"]);
         $stmt->execute();
         
@@ -96,4 +101,8 @@ else {
   body {
     background-color: #e6b800;
   }
+  
 </style>
+<form action="AdminInfopage.php" method="get">
+    <button type="submit">Back to Database</button>
+    </form>

@@ -29,19 +29,41 @@ echo '<body style = "background-color: #777BB3">';
 	<body>
     <?php
         // Dispay student's clubs coloumn below.. 
+    $sqlQuery =
+    "SELECT c.name, c.department
+    FROM student s
+    	INNER JOIN student_clubs sc ON s.V_number = sc.V_number
+        INNER JOIN club c ON c.club_id = sc.club_id
+    WHERE s.V_number = :session_V_number;";
+    $stmt = $conn->prepare($sqlQuery);
+    $stmt->bindParam(':session_V_number', $session_V_number, PDO:: PARAM_STR);
+    $stmt->execute();
+    $query = $stmt->fetch(PDO::FETCH_ASSOC); 
     
-        // Options...
         echo "<p>
                 <span style = 'font-size: 12px; float: right;'>
                     Student View
                 </span><br>
                 <span style = 'font-size: 50px;'>
                 " . $user_firstName . "'s Clubs...
-                </span>
-                
-                
-             </p>";
+                </span><br>";
+        if (empty($query)) {
+            echo "<span style = 'font-size: 20px;'>"
+                . $user_firstName . " isn't in any clubs :(
+                  </span><br>"; 
+        } 
+        else {
+            foreach ($query AS $q_row) {
+                $student_club_Name = $q_row["c.name"];
+                $student_club_Dept = $q_row["c.department"]; 
+                echo "<span style = 'font-size: 20px;'>
+                    Club Name: " . $student_club_Name . "
+                    | Club Department: " . $student_club_Dept . "</span><br>"; 
+            }
+        }
+        echo "</p>";
         
+        // Options...
         echo "<p>
                 <a href = 'studentProfile.php'>
                     View Homepage
@@ -52,7 +74,9 @@ echo '<body style = "background-color: #777BB3">';
                 <a href = 'Student_Info.php'>
                     | View Student Information
                 </a>
-                | Logout (NOT YET IMPLEMENTED!!!!)
+                <a href = 'login.php'>
+                    | Logout
+                </a>
               </p>";
     ?>
 	</body>

@@ -23,19 +23,71 @@ echo '<body style = "background-color: #777BB3">';
 
 <?php
     // Dispay student course history coloumn below.. 
+    $sqlQuery ="
+    SELECT 
+        c.course_name,
+        s.section_id, 
+        CONCAT(i.first_name, ' ', i.last_name) AS instructor,
+        d.department_name, 
+        GROUP_CONCAT(
+            (SELECT c2.course_name 
+                FROM course c2 
+                WHERE c2.course_id = p.prerequisite_id) /*Prerequisite class.*/ 
+                SEPARATOR ', '
+            ) AS prereqs
+    FROM student stu
+    	INNER JOIN student_courses sc ON sc.V_number = 	
+        	stu.V_number
+    	INNER JOIN course c ON c.course_id = sc.course_id
+        INNER JOIN course_section s ON s.course_id = c.course_id
+    	INNER JOIN instructor_courses ic ON ic.course_id = sc.course_id
+        INNER JOIN instructor i ON i.instructor_id = ic.instructor_id
+        LEFT JOIN prerequisite p ON p.course_id = c.course_id
+        INNER JOIN department d ON c.department_id = d.department_id
+    WHERE stu.V_number = :session_V_number
+	GROUP BY c.course_id, s.section_id, i.instructor_id;
+    ";
     
-    // Options...
+    $stmt = $conn->prepare($sqlQuery);
+    $stmt->bindParam(':session_V_number', $session_V_number, PDO:: PARAM_STR);
+    $stmt->execute();
+    $query = $stmt->fetchALL(PDO::FETCH_ASSOC); 
+
+    
     echo "<p>
             <span style = 'font-size: 12px; float: right;'>
                 Student View
             </span><br>
             <span style = 'font-size: 50px;'>
                 " . $user_firstName . "'s Course History...
-            </span>
+            </span><br>";
+    if (empty($query)) {
+        echo "<span style = 'font-size: 20px;'>"
+            . $user_firstName . " hasn't taken any courses :(
+                  </span><br>";
+    }
+    else {
+        foreach ($query as $q_row) {
+            $course_Name = $q_row["course_name"];
+            $section_ID = $q_row["section_id"];
+            $instructor = $q_row["instructor"];
+            $department_Name = $q_row["department_name"];
+            $prereqs = $q_row["prereqs"];
             
-            
-        </p>";
+            echo "---------------------------------------------------------------------------------------------------------------<br>
+                    <span style = 'font-size: 20px;'>
+                    Course Name - Section: " . $course_Name . 
+                    "-" . $section_ID . "
+                    <br>Instructor: " . $instructor . "
+                    <br>Department: " . $department_Name . "
+                    <br>Prerequisite(s): " . $prereqs . 
+                    "</span><br>
+                    ---------------------------------------------------------------------------------------------------------------"; 
+        }
+    }     
+    echo"</p>";
     
+    // Options...
     echo "<p>
             <a href = 'studentProfile.php'>
                 View Homepage
@@ -46,6 +98,8 @@ echo '<body style = "background-color: #777BB3">';
             <a href = 'Student_Clubs.php'>
                 | Veiw Clubs
             </a>
-            | Logout (NOT YET IMPLEMENTED!!!!)
+            <a href = 'login.php'>
+                | Logout
+            </a>
           </p>";
 ?>

@@ -34,6 +34,7 @@
                 CONCAT(s.first_name, ' ', s.last_name), 
                 s.preferred_name, 
                 V_number, 
+                GROUP_CONCAT(p.phone_number SEPARATOR ', ') AS phone_numbers, 
                 d.department_name,
                 CONCAT(ad.first_name, ' ', ad.last_name ),
                 s.EID,
@@ -43,7 +44,8 @@
                 s.expected_graduation_date   
             FROM student s
 	           INNER JOIN department d ON d.department_id = s.department
-               INNER JOIN academic_advisor ad ON ad.academic_advisor_id = s.advisor    
+               INNER JOIN academic_advisor ad ON ad.academic_advisor_id = s.advisor
+               LEFT JOIN phone_number p ON p.student = s.V_number
             WHERE V_number = :session_V_number;";
         	$stmt = $conn->prepare($sqlQuery);
         	$stmt->bindParam(':session_V_number', $session_V_number, PDO:: PARAM_STR);
@@ -53,6 +55,7 @@
         	$user_FullName = $query["CONCAT(s.first_name, ' ', s.last_name)"]; 
         	$preferred_name = $query["preferred_name"];
         	$student_V_number = $query["V_number"]; 
+        	$student_PhoneNum = $query["phone_numbers"]; 
         	$deparment = $query["department_name"]; 
         	$advisor = $query["CONCAT(ad.first_name, ' ', ad.last_name )"]; 
         	$eid = $query["EID"]; 
@@ -63,20 +66,23 @@
         	
         	// Add this later: "edit" means you can edit a data field..
         	echo "<p> 
+                    <span style = 'font-size: 12px; float: right;'>
+                        Student View
+                    </span><br>
                     <span style = 'font-size: 50px;'>".
                         $user_firstName . "'s Student Information...</span><br>
                     <span style = 'font-size: 25px;'>
                         Full Name: " . $user_FullName . " <br>
                         Preferred Name: " . $preferred_name . " <br>
-                        V Number: " . $student_V_number . " <br>
-                        Phone Number(s): MISSING!!<br>
+                        V Number: V#" . $student_V_number . " <br>
+                        Phone Number(s): " . $student_PhoneNum . "<br>
                         Department: " . $deparment . " <br>
                         Advisor: " . $advisor . " <br>
                         EID: " . $eid . " <br>
                         Current Password: 
                             | <a href = 'changePswrd.php'>
                                 <span style = 'font-size: 14px;'>
-                                    edit
+                                    edit (NOT IMPLEMENTED)
                                 </span>
                               </a> <br>
                         DOB: " . $dob . " <br>
@@ -97,7 +103,9 @@
                    <a href = 'Student_Clubs.php'>
                         | Veiw Clubs
                    </a>    
-                   | Logout (NOT YET IMPLEMENTED!!!!) 
+                    <a href = 'login.php'>
+                        | Logout
+                    </a>
                  </p>";
     	?>
 	</body>

@@ -18,6 +18,7 @@
         exit;
     }
     // PHP colors: https://brandpalettes.com/php-logo-colors/#:~:text=The%20official%20colors%20of%20PHP%20are%20light,blue%2C%20blue%2C%20dark%20blue%2C%20white%2C%20and%20black.
+    //  AND: https://www.color-hex.com/
     echo '<body style = "background-color: #777BB3">';
 ?>
 <!DOCTYPE html>
@@ -56,7 +57,9 @@
             
             // Options..
             echo "<p>
-                    Logout (NOT YET IMPLEMENTED!!!!)
+                    <a href = 'login.php'>
+                        Logout
+                    </a>
                 </p>";
         ?>
 	</body>
