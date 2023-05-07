@@ -17,9 +17,9 @@ $(document).ready(function(){
 				action:'listStudents'
 			},
 			dataType:"json",
-			 success: function(data) {
-            console.log(data);
-        }
+			success: function(data) {
+				console.log(data);
+			}
 		},
 		"columns": [
 			{"data": "V-Number"},
@@ -53,4 +53,46 @@ $(document).ready(function(){
 			}
 		]
 	});	
+	
+	 // Add click event listener to "Sort by Name (ASC)" button
+  $('#sortAsc').click(function() {
+    // Send AJAX request to retrieve sorted data
+    $.ajax({
+      type: 'POST',
+      url: 'AdminInfopage-Action.php',
+      data: {order: 'asc'},
+      dataType: 'json',
+      success: function(data) {
+        // Replace table data with new sorted data
+        var table = $('#table-students').DataTable();
+        table.clear().draw();
+        table.rows.add(data).draw();
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
+    });
+  });
+	  // Add click event listener to "Sort by Name (DESC)" button
+  $('#sortDesc').click(function() {
+    // Send AJAX request to retrieve sorted data
+    $.ajax({
+      type: 'POST',
+      url: 'AdminInfopage-Action.php',
+      data: {order: 'desc'},
+      dataType: 'json',
+      success: function(data) {
+        // Replace table data with new sorted data
+        var table = $('#table-students').DataTable();
+        table.clear().draw();
+        table.rows.add(data).draw();
+      },
+      error: function(xhr, status, error) {
+        console.error(xhr.responseText);
+      }
+    });
+  });
 });
+
+	
+	

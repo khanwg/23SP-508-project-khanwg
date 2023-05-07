@@ -174,6 +174,36 @@ function deleteStudent()
         $stmt->execute();
     }
 }
+function sortByNameASC(){
+    global $conn;
+    
+    $order = $_GET['order'];
+    
+    $sql = "SELECT s.V_number as `V-Number`,
+           d.department_name AS `Department Name`,
+           concat(a.first_name,' ',a.last_name) as `Advisor Name`,
+           s.eID as `eID`,
+           concat(s.first_name,' ',s.last_name) as `Name`,
+           s.DOB as `DOB`,
+           s.total_credits as `Total Credits`,
+           s.enrollment_date as `Enrollment Date`,
+           s.expected_graduation_date as `Expected Graduation Date`
+    FROM student s
+    INNER JOIN department d ON s.department = d.department_id
+    INNER JOIN academic_advisor a ON a.academic_advisor_id = s.advisor
+    ORDER BY `Name` $order";
+    
+    $stmt = $conn->prepare($sql);
+    $stmt->execute();
+    
+    $data = array();
+    
+    while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
+        $data[] = $row;
+    }
+    
+    echo json_encode($data);
+}
 
 if(!empty($_POST['action']) && $_POST['action'] == 'listStudents') {
     listStudents();
@@ -189,6 +219,9 @@ if(!empty($_POST['action']) && $_POST['action'] == 'updateStudent') {
 }
 if(!empty($_POST['action']) && $_POST['action'] == 'deleteStudent') {
     deleteStudent();
+}
+if(!empty($_POST['action']) && $_POST['action'] == 'deleteStudent') {
+    sortByNameASC();
 }
 
 ?>
