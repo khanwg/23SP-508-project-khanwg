@@ -86,7 +86,15 @@ else {
         $stmt->execute();
         
     } catch (PDOException $e) {
-        echo "Error: " . $e->getMessage();
+        if($e->getCode() == '22003') {
+            
+            echo "Please go back and enter a valid V#(8 digits)";
+            ?> <form action="AddStudentPage.php" method="get">
+    <button type="submit">Back to Add Student</button>
+    </form>
+      
+      <?php   }
+        
         die();
     }
     

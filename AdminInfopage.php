@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Admin database - Students</title>
+    
     <?php require_once('header.php'); ?>
     <!-- Include jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -105,7 +106,11 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true){
                     echo "<td><a href='updateStudentAdmin.php?v_number=" . $row['V-Number'] . "'>Update</a> | <a href='#' onclick=\"if(confirm('Are you sure you would like to delete this student?')){window.location.href='deleteStudent.php?v_number=" . $row['V-Number'] . "';}\">Delete</a></td>";
                     
                     echo "</tr>";
-                } ?>
+                } 
+                echo "<p>
+                <span style = 'font-size: 12px; float: right;'>
+                    Admin View
+                </span><br><p>";?>
             </tbody>
         </table>
     </div>

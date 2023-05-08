@@ -113,7 +113,12 @@ if (isset($_SESSION['loggedin']) && $_SESSION['loggedin'] == true){
     <button type="submit">Back to Database</button>
     
     </form>
-<?php }?>
+<?php }
+echo "<p>
+                <span style = 'font-size: 12px; float: right;'>
+                    Admin View
+                </span><br><p>";
+?>
 
 </tbody>
 </table>

@@ -18,7 +18,7 @@ else {
     exit;
 }
 // PHP colors: https://brandpalettes.com/php-logo-colors/#:~:text=The%20official%20colors%20of%20PHP%20are%20light,blue%2C%20blue%2C%20dark%20blue%2C%20white%2C%20and%20black.
-echo '<body style = "background-color: #777BB3">';
+echo '<body style = "background-color: #e6b800">';
 ?>
 
 <!DOCTYPE html>
@@ -30,15 +30,16 @@ echo '<body style = "background-color: #777BB3">';
     <?php
         // Dispay student's clubs coloumn below.. 
     $sqlQuery =
-    "SELECT c.name, c.department
+    "SELECT c.name, d.department_name
     FROM student s
     	INNER JOIN student_clubs sc ON s.V_number = sc.V_number
         INNER JOIN club c ON c.club_id = sc.club_id
+        INNER JOIN department d ON d.department_id = c.department
     WHERE s.V_number = :session_V_number;";
     $stmt = $conn->prepare($sqlQuery);
     $stmt->bindParam(':session_V_number', $session_V_number, PDO:: PARAM_STR);
     $stmt->execute();
-    $query = $stmt->fetch(PDO::FETCH_ASSOC); 
+    $query = $stmt->fetchAll(PDO::FETCH_ASSOC); 
     
         echo "<p>
                 <span style = 'font-size: 12px; float: right;'>
@@ -53,12 +54,14 @@ echo '<body style = "background-color: #777BB3">';
                   </span><br>"; 
         } 
         else {
+            echo"-----------------------------------------------------------------------------------------------------<br>";
             foreach ($query AS $q_row) {
-                $student_club_Name = $q_row["c.name"];
-                $student_club_Dept = $q_row["c.department"]; 
+                $student_club_Name = $q_row["name"];
+                $student_club_Dept = $q_row["department_name"];
                 echo "<span style = 'font-size: 20px;'>
                     Club Name: " . $student_club_Name . "
-                    | Club Department: " . $student_club_Dept . "</span><br>"; 
+                    <br>Club Department: " . $student_club_Dept . "</span><br>
+                    -----------------------------------------------------------------------------------------------------<br>"; 
             }
         }
         echo "</p>";

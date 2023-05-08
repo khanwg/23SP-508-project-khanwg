@@ -18,7 +18,7 @@ else {
     exit;
 }
 // PHP colors: https://brandpalettes.com/php-logo-colors/#:~:text=The%20official%20colors%20of%20PHP%20are%20light,blue%2C%20blue%2C%20dark%20blue%2C%20white%2C%20and%20black.
-echo '<body style = "background-color: #777BB3">';
+echo '<body style = "background-color: #e6b800">';
 ?>
 
 <?php
@@ -67,6 +67,7 @@ echo '<body style = "background-color: #777BB3">';
                   </span><br>";
     }
     else {
+        echo"---------------------------------------------------------------------------------------------------------------<br>";
         foreach ($query as $q_row) {
             $course_Name = $q_row["course_name"];
             $section_ID = $q_row["section_id"];
@@ -74,15 +75,14 @@ echo '<body style = "background-color: #777BB3">';
             $department_Name = $q_row["department_name"];
             $prereqs = $q_row["prereqs"];
             
-            echo "---------------------------------------------------------------------------------------------------------------<br>
-                    <span style = 'font-size: 20px;'>
+            echo "<span style = 'font-size: 20px;'>
                     Course Name - Section: " . $course_Name . 
                     "-" . $section_ID . "
                     <br>Instructor: " . $instructor . "
                     <br>Department: " . $department_Name . "
-                    <br>Prerequisite(s): " . $prereqs . 
+                    <br>Prerequisite: " . $prereqs . 
                     "</span><br>
-                    ---------------------------------------------------------------------------------------------------------------"; 
+                    ---------------------------------------------------------------------------------------------------------------<br>"; 
         }
     }     
     echo"</p>";
